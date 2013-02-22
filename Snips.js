@@ -27,3 +27,35 @@ var setQueue = function(place, func) {
 			};
 			return setQueue.apply(this, arguments);
 		};
+
+//backbone event sponge to allow later connect attempts to get already produced data
+var sponge = function(object){
+	var sponge = {}, eventSplitter = /\s+/, slice = Array.prototype.slice;
+	var allFunc = function(eventName){
+		var name, data;
+		name = eventName;
+		data = slice.call(arguments, 1);
+		sponge[name] = data;
+		console.log(arguments);
+	};
+	object.on("all", allFunc);
+	var _origOn = object.on;
+	object.on = _.wrap(_origOn, function(func){
+		debugger;
+		var events, args = slice.call(arguments, 1);
+		func.apply(object, args);
+		events = args[0].split(eventSplitter);
+		while (event = events.shift()) {
+			if(sponge[event]) {
+				args[1].apply(args[2] || object, sponge[event]);
+			}
+		}
+	});
+	return {
+		destroy: function() {
+			object.on = _origOn;
+			sponge = null;
+			object.off("all", allFunc);
+		}
+	}
+};
