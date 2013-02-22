@@ -41,7 +41,6 @@ var sponge = function(object){
 	object.on("all", allFunc);
 	var _origOn = object.on;
 	object.on = _.wrap(_origOn, function(func){
-		debugger;
 		var events, args = slice.call(arguments, 1);
 		func.apply(object, args);
 		events = args[0].split(eventSplitter);
