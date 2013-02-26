@@ -58,3 +58,47 @@ var sponge = function(object){
 		}
 	}
 };
+
+//logging timing stuff
+
+logger = function(description, start) {
+	var now = performance.now() - (start ? start : 0);
+	var object = JSON.parse(localStorage.getItem("timings")) || {};
+	var item = object[description];
+	if(item) {
+		var totalTime = item + now;
+		object[description] =  totalTime;
+		console.log(description + ": " + now);
+	} else {
+		object[description] = now;
+		console.log(description + ": " + now);
+	}
+	localStorage.setItem("timings", JSON.stringify(object));
+};
+
+parseTimings = function() {
+	var object = JSON.parse(localStorage.getItem("timings"));
+	if(object) {
+		var count = localStorage.getItem("reloadss") * 1;
+		console.log("Reloads: " +  count);
+		_.each(object, function(property, key){
+			console.log("Cumulative " + key + ": " + (property / count));
+		});
+	}
+};
+
+reloader = function(count) {
+	var item = (localStorage.getItem("reloadss") || 1) * 1;
+	item++
+	localStorage.setItem("reloadss", item);
+	if(item < count) {
+		location.reload();
+	} else {
+		parseTimings();
+	}
+};
+
+clearStuff = function() {
+	localStorage.setItem("reloadss", 0);
+	localStorage.setItem("timings", null);
+};
