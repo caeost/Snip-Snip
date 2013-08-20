@@ -102,3 +102,44 @@ clearStuff = function() {
 	localStorage.setItem("reloadss", 0);
 	localStorage.setItem("timings", null);
 };
+
+// extraction of backbone models attrs feature with change etc, can extend objects 
+define(function(){
+	return function(parent, extraName){
+		extraName = extraName || "Attr";
+		this.attributes = {};
+		this._changes = {};
+		this.changed = {};
+		this._pending = {};
+		this._previousAttributes = {};
+		this._validate = function(){return true};
+		this.get = _.bind(Backbone.Model.prototype.get, this);
+		this.escape = _.bind(Backbone.Model.prototype.escape, this);
+		this.set =_.bind(Backbone.Model.prototype.set, this);
+		this.previous =_.bind(Backbone.Model.prototype.previous, this);
+		this.previousAttributes =_.bind(Backbone.Model.prototype.previousAttributes, this);
+		this.changedAttributes =_.bind(Backbone.Model.prototype.changedAttributes, this);
+		this.hasChanged =_.bind(Backbone.Model.prototype.hasChanged, this);
+		_.extend(this, Backbone.Events);
+
+		if(parent) {
+			this.on("all", function(event) {
+				this.trigger.apply(parent, arguments);
+			}, this);
+		}
+
+		var reveal = {
+			"set": this.set,
+			"get": this.get,
+			escape: this.escape,
+			previous: this.previous,
+			previousAttributes: this.previousAttributes,
+			changed: this.changedAttributes
+		};
+
+		return _.reduce(reveal, function(memo, fn, name) {
+			memo[name + extraName] = fn;
+			return memo;
+		}, {})
+	};
+});
