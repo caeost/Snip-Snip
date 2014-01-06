@@ -14,7 +14,7 @@ var limpit = function() {
 			cid = from.cid;
 		for(var key in attrs) {
 			if(attrs.hasOwnProperty(key)) {
-				if(limpit[key] = cid) {
+				if(limpit[key] == cid) {
 					delete limpit[key];
 				}
 			}
