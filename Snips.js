@@ -2,20 +2,18 @@
 _.memoize = function(func, hasher) {
   var memo = {};
   hasher || (hasher = _.identity);
-  var memo = function() {
+  var mem = function() {
     var key = hasher.apply(this, arguments),
-        construct = this instanceof memo;
-    var returnable;
+        construct = this instanceof mem;
     if(_.has(memo, key)) {
-      returnable = memo[key];
+      return memo[key];
     } else {
       var result = func.apply(this, arguments);
-      returnable = memo[key] = (construct ? this : result);
+      return memo[key] = (construct ? this : result);
     }
-    return returnable;
   };
-  memo.prototype = func.prototype;
-  return memo;
+  mem.prototype = func.prototype;
+  return mem;
 };
 
 
