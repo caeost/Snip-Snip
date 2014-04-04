@@ -1,3 +1,29 @@
+//version of underscore memoize that memoizes constructors correctly
+_.memoize = function(func, hasher) {
+  var memo = {};
+  hasher || (hasher = _.identity);
+  var memo = function() {
+    var key = hasher.apply(this, arguments),
+        construct = this instanceof memo;
+    var returnable;
+    if(_.has(memo, key)) {
+      returnable = memo[key];
+    } else {
+      var result = func.apply(this, arguments);
+      returnable = memo[key] = (construct ? this : result);
+    }
+    return returnable;
+  };
+  memo.prototype = func.prototype;
+  return memo;
+};
+
+
+
+
+
+
+
 //execute functions in order define by place no matter in which order they are called
 //var print = function(x) {console.log(x)};
 //setQueue(1,print,2);
