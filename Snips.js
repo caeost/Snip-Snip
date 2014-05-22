@@ -1,3 +1,30 @@
+//when a certain item has dissapeared (say in a destructive rerender) and you want to try to find
+// something like it again this will loop through and try to find a singular object which fulfills as many
+// similarities as possible
+var checkAttributes = ["id", "class", "data-id", "role"];
+var refindElement = function(old) {
+	var list = $("body").focusable(),
+		index = 0,
+		oldList = list;
+
+	while(index < checkAttributes.length) {
+		var current = checkAttributes[index++],
+			escaped = current.replace(/:/g, "\\:"),
+			oldValue = old.attr(current),
+			filterSelector = oldValue ?  "[" + escaped +  "='" + oldValue + "']" : ":not([" + escaped + "])";
+
+		if(list.length === 1) {
+			break;
+		} else if(!list.length) {
+			list = oldList;
+		}
+		oldList = list;
+		list = list.filter(filterSelector);
+	}
+	if(list.length === 1) list.focus();
+};
+
+
 //version of underscore memoize that memoizes constructors correctly
 _.memoize = function(func, hasher) {
   var memo = {};
