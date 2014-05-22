@@ -24,6 +24,15 @@ var refindElement = function(old) {
 	if(list.length === 1) list.focus();
 };
 
+// basic implementation of finding focusable things
+jQuery.fn.focusable = function() {
+	var $potentials = $(this).find("*[tabindex], a[href], area[href], input:not([disabled], [type=hidden]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed,*[contenteditable]");
+
+	return $potentials.filter(function() {
+		var $this = $(this);
+		return $this.attr("tabindex") != -1 && (!$this.attr("href") || $this.attr("href") != "#");
+	});
+};
 
 //version of underscore memoize that memoizes constructors correctly
 _.memoize = function(func, hasher) {
